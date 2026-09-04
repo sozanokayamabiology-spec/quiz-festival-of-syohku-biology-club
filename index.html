@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>BIO QUIZ 2026 | Result</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="container">
+
+    <!-- 検索画面 -->
+    <section id="searchScreen" class="screen">
+
+      <div class="logo">
+        BIO QUIZ
+        <span>2026</span>
+      </div>
+
+      <p class="eyebrow">
+        QUIZ RESULT SYSTEM
+      </p>
+
+      <h1>
+        あなたの<br>
+        クイズ結果を見る
+      </h1>
+
+      <p class="description">
+        文化祭で使用したニックネームを入力してください。
+      </p>
+
+      <form id="searchForm">
+
+        <label for="nickname">
+          ニックネーム
+        </label>
+
+        <input
+          id="nickname"
+          type="text"
+          placeholder="例：yuu"
+          autocomplete="off"
+          required
+        >
+
+        <button type="submit">
+          結果を見る
+          <span>→</span>
+        </button>
+
+      </form>
+
+      <p id="errorMessage" class="error"></p>
+
+    </section>
+
+
+    <!-- 結果画面 -->
+    <section id="resultScreen" class="screen hidden">
+
+      <button id="backButton" class="back-button">
+        ← 検索に戻る
+      </button>
+
+      <p class="eyebrow">
+        QUIZ RESULT
+      </p>
+
+      <h1>
+        <span id="resultNickname"></span>
+        <span class="small-text">さんの結果</span>
+      </h1>
+
+
+      <div class="stats">
+
+        <div class="stat-card rank-card">
+          <span class="stat-label">
+            RANK
+          </span>
+
+          <strong id="resultRank">
+            -
+          </strong>
+
+          <span class="stat-unit">
+            位
+          </span>
+        </div>
+
+
+        <div class="stat-card">
+          <span class="stat-label">
+            CORRECT
+          </span>
+
+          <strong id="resultCorrect">
+            -
+          </strong>
+
+          <span class="stat-unit">
+            / 55
+          </span>
+        </div>
+
+      </div>
+
+
+      <section class="questions-section">
+
+        <div class="section-heading">
+          <span>01</span>
+          <h2>正解した問題</h2>
+        </div>
+
+        <div id="correctQuestions" class="question-list">
+        </div>
+
+      </section>
+
+
+      <section class="message-section">
+
+        <p>
+          QUIZ COMPLETE
+        </p>
+
+        <h2>
+          おつかれさまでした！
+        </h2>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <footer>
+    BIO QUIZ 2026
+  </footer>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
