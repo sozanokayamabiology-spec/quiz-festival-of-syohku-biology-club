@@ -86,73 +86,76 @@ searchForm.addEventListener(
 );
 
 
-function showResult(participant) {
+participant.correctQuestions.forEach(function(questionId) {
 
-  document.getElementById(
-    "resultNickname"
-  ).textContent =
-    participant.nickname;
+  const question = QUESTIONS[questionId];
 
+  const item =
+    document.createElement("article");
 
-  document.getElementById(
-    "resultRank"
-  ).textContent =
-    participant.rank ?? "-";
+  item.className =
+    "question-item";
 
 
-  document.getElementById(
-    "resultCorrect"
-  ).textContent =
-    participant.correctCount;
+  // 問題データが存在しない場合
+  if (!question) {
 
-
-  const questionList =
-    document.getElementById(
-      "correctQuestions"
-    );
-
-
-  questionList.innerHTML = "";
-
-
-  if (
-    !participant.correctQuestions ||
-    participant.correctQuestions.length === 0
-  ) {
-
-    questionList.innerHTML =
-      `
-      <div class="question-item">
-        <span>正解した問題はありません</span>
+    item.innerHTML = `
+      <div>
+        <span class="question-id">
+          ${questionId}
+        </span>
       </div>
-      `;
 
-  } else {
+      <span class="correct-mark">
+        ✓ CORRECT
+      </span>
+    `;
 
-    participant.correctQuestions
-      .forEach(function(questionId) {
+    questionList.appendChild(item);
 
-        const item =
-          document.createElement("div");
+    return;
+  }
 
-        item.className =
-          "question-item";
 
-        item.innerHTML =
-          `
-          <span class="question-id">
-            ${questionId}
-          </span>
+  item.innerHTML = `
+    <div class="question-content">
 
-          <span class="correct-mark">
-            ✓ CORRECT
-          </span>
-          `;
+      <div class="question-top">
 
-        questionList.appendChild(item);
+        <span class="question-id">
+          ${questionId}
+        </span>
 
-      });
+        <span class="correct-mark">
+          ✓ CORRECT
+        </span>
 
+      </div>
+
+      <p class="question-text">
+        ${escapeHTML(question.question)}
+      </p>
+
+      <div class="answer-box">
+
+        <span class="answer-label">
+          CORRECT ANSWER
+        </span>
+
+        <p>
+          ${escapeHTML(question.answer)}
+        </p>
+
+      </div>
+
+    </div>
+  `;
+
+
+  questionList.appendChild(item);
+
+});
   }
 
 
