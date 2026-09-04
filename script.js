@@ -2,6 +2,10 @@ const API_URL =
   "https://script.google.com/macros/s/AKfycbw4hRguawb1TwJtxHgWpXal9BkB6Od52zPzMCy3-Ti4LGuJgh1u96zhcRbSf9ue3X8Q/exec";
 
 
+// ========================================
+// DOM
+// ========================================
+
 const searchForm =
   document.getElementById("searchForm");
 
@@ -20,10 +24,26 @@ const resultScreen =
 const backButton =
   document.getElementById("backButton");
 
+const resultNickname =
+  document.getElementById("resultNickname");
+
+const resultRank =
+  document.getElementById("resultRank");
+
+const resultCorrect =
+  document.getElementById("resultCorrect");
+
+const questionList =
+  document.getElementById("correctQuestions");
+
+
+// ========================================
+// 検索
+// ========================================
 
 searchForm.addEventListener(
   "submit",
-  async function(event) {
+  async function (event) {
 
     event.preventDefault();
 
@@ -34,6 +54,7 @@ searchForm.addEventListener(
       return;
     }
 
+    // エラー表示をリセット
     errorMessage.textContent = "";
 
     try {
@@ -59,6 +80,7 @@ searchForm.addEventListener(
         await response.json();
 
 
+      // 参加者が見つからなかった場合
       if (!data.success) {
 
         errorMessage.textContent =
@@ -68,6 +90,7 @@ searchForm.addEventListener(
       }
 
 
+      // 結果表示
       showResult(
         data.participant
       );
@@ -86,78 +109,156 @@ searchForm.addEventListener(
 );
 
 
-participant.correctQuestions.forEach(function(questionId) {
+// ========================================
+// 結果表示
+// ========================================
 
-  const question = QUESTIONS[questionId];
+function showResult(participant) {
 
-  const item =
-    document.createElement("article");
+  // -------------------------
+  // 基本情報
+  // -------------------------
 
-  item.className =
-    "question-item";
+  resultNickname.textContent =
+    participant.nickname || "";
+
+  resultRank.textContent =
+    participant.rank ?? "-";
+
+  resultCorrect.textContent =
+    participant.correctCount ?? "0";
 
 
-  // 問題データが存在しない場合
-  if (!question) {
+  // -------------------------
+  // 正解問題を一度クリア
+  // -------------------------
 
-    item.innerHTML = `
-      <div>
-        <span class="question-id">
-          ${questionId}
-        </span>
+  questionList.innerHTML = "";
+
+
+  // -------------------------
+  // 正解した問題
+  // -------------------------
+
+  const correctQuestions =
+    Array.isArray(participant.correctQuestions)
+      ? participant.correctQuestions
+      : [];
+
+
+  if (correctQuestions.length === 0) {
+
+    questionList.innerHTML = `
+      <div class="question-item">
+
+        <div class="question-content">
+
+          <p class="question-text">
+            正解した問題はありません。
+          </p>
+
+        </div>
+
       </div>
-
-      <span class="correct-mark">
-        ✓ CORRECT
-      </span>
     `;
 
-    questionList.appendChild(item);
+  } else {
 
-    return;
+    correctQuestions.forEach(
+      function (questionId) {
+
+        const question =
+          QUESTIONS[questionId];
+
+
+        const item =
+          document.createElement("article");
+
+
+        item.className =
+          "question-item";
+
+
+        // -------------------------
+        // 問題データが存在しない場合
+        // -------------------------
+
+        if (!question) {
+
+          item.innerHTML = `
+            <div class="question-content">
+
+              <div class="question-top">
+
+                <span class="question-id">
+                  ${escapeHTML(questionId)}
+                </span>
+
+                <span class="correct-mark">
+                  ✓ CORRECT
+                </span>
+
+              </div>
+
+            </div>
+          `;
+
+          questionList.appendChild(item);
+
+          return;
+        }
+
+
+        // -------------------------
+        // 問題データが存在する場合
+        // -------------------------
+
+        item.innerHTML = `
+          <div class="question-content">
+
+            <div class="question-top">
+
+              <span class="question-id">
+                ${escapeHTML(questionId)}
+              </span>
+
+              <span class="correct-mark">
+                ✓ CORRECT
+              </span>
+
+            </div>
+
+            <p class="question-text">
+              ${escapeHTML(question.question)}
+            </p>
+
+            <div class="answer-box">
+
+              <span class="answer-label">
+                CORRECT ANSWER
+              </span>
+
+              <p>
+                ${escapeHTML(question.answer)}
+              </p>
+
+            </div>
+
+          </div>
+        `;
+
+
+        questionList.appendChild(item);
+
+      }
+    );
+
   }
 
 
-  item.innerHTML = `
-    <div class="question-content">
-
-      <div class="question-top">
-
-        <span class="question-id">
-          ${questionId}
-        </span>
-
-        <span class="correct-mark">
-          ✓ CORRECT
-        </span>
-
-      </div>
-
-      <p class="question-text">
-        ${escapeHTML(question.question)}
-      </p>
-
-      <div class="answer-box">
-
-        <span class="answer-label">
-          CORRECT ANSWER
-        </span>
-
-        <p>
-          ${escapeHTML(question.answer)}
-        </p>
-
-      </div>
-
-    </div>
-  `;
-
-
-  questionList.appendChild(item);
-
-});
-  }
-
+  // -------------------------
+  // 画面切り替え
+  // -------------------------
 
   searchScreen.classList.add(
     "hidden"
@@ -168,6 +269,10 @@ participant.correctQuestions.forEach(function(questionId) {
   );
 
 
+  // -------------------------
+  // ページ上部へ
+  // -------------------------
+
   window.scrollTo({
     top: 0,
     behavior: "smooth"
@@ -176,9 +281,13 @@ participant.correctQuestions.forEach(function(questionId) {
 }
 
 
+// ========================================
+// 検索画面へ戻る
+// ========================================
+
 backButton.addEventListener(
   "click",
-  function() {
+  function () {
 
     resultScreen.classList.add(
       "hidden"
@@ -199,3 +308,23 @@ backButton.addEventListener(
 
   }
 );
+
+
+// ========================================
+// HTMLエスケープ
+// ========================================
+
+function escapeHTML(value) {
+
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
